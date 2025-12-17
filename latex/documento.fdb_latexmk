@@ -1,0 +1,26 @@
+# Fdb version 4
+["pdflatex"] 1765950279.31514 "c:/Users/elkin/OneDrive/Documentos/Flutter Projects/giroscopio_app/documento.tex" "latex/documento.pdf" "documento" 1765950291.22293 2
+  "C:/Program Files/MiKTeX/fonts/tfm/public/cm/cmr12.tfm" 1136765053 1288 655e228510b4c2a1abe905c368440826 ""
+  "C:/Program Files/MiKTeX/tex/generic/babel/babel.sty" 1762681668 146027 ef4163b2f3d9457f0205f6d7ce8e5cd4 ""
+  "C:/Program Files/MiKTeX/tex/generic/babel/locale/es/babel-es.ini" 1762681669 4345 33a8cc6f0a7c6afcb84895b2c963a4e5 ""
+  "C:/Program Files/MiKTeX/tex/generic/babel/locale/es/babel-spanish.tex" 1762681669 374 26aa36054295520df734dd14cd75addc ""
+  "C:/Program Files/MiKTeX/tex/generic/babel/txtbabel.def" 1762681668 5231 82bb24bf20af7e4d760717f2cadb5170 ""
+  "C:/Program Files/MiKTeX/tex/generic/iftex/iftex.sty" 1734114575 7984 7dbb9280f03c0a315425f1b4f35d43ee ""
+  "C:/Program Files/MiKTeX/tex/generic/iftex/ifvtex.sty" 1734114575 1057 525c2192b5febbd8c1f662c9468335bb ""
+  "C:/Program Files/MiKTeX/tex/latex/arabi/bblopts.cfg" 1705750854 902 c30e5c373bc58bde21f8f63a3091626f ""
+  "C:/Program Files/MiKTeX/tex/latex/babel-spanish/spanish.ldf" 1622279580 26965 3b6d1655ad716f98e788b1fb9f2e87b8 ""
+  "C:/Program Files/MiKTeX/tex/latex/base/article.cls" 1761900684 20144 b966087dda3b194755eb460d32e2ef75 ""
+  "C:/Program Files/MiKTeX/tex/latex/base/inputenc.sty" 1761900684 5048 0270515b828149155424600fd2d58ac5 ""
+  "C:/Program Files/MiKTeX/tex/latex/base/size12.clo" 1761900684 8449 8dc66c6c313c8eb2d774af83bca435dd ""
+  "C:/Program Files/MiKTeX/tex/latex/geometry/geometry.cfg" 1578053545 1104 7ac475a4e3466b0b43e138e9356bda83 ""
+  "C:/Program Files/MiKTeX/tex/latex/geometry/geometry.sty" 1578053545 42759 9cf6c5257b1bc7af01a58859749dd37a ""
+  "C:/Program Files/MiKTeX/tex/latex/graphics/keyval.sty" 1749322634 2671 d9941f4bf4750e9b0603c9a2ec54693b ""
+  "C:/Users/elkin/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1764199078 13323445 9c9d6e6641676fc678bbce228140708b ""
+  "c:/Users/elkin/OneDrive/Documentos/Flutter Projects/giroscopio_app/documento.tex" 1765949843 39813 e25448ce191d337748174f266b31d3c2 ""
+  "documento.tex" 1765949843 39813 e25448ce191d337748174f266b31d3c2 ""
+  "latex/documento.aux" 1765949782 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  (generated)
+  "latex/documento.aux"
+  "latex/documento.log"
+  "latex/documento.pdf"
+  (rewritten before read)

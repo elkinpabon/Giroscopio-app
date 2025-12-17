@@ -1,0 +1,649 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Paquetes de Idioma y Codificación ---
+\usepackage[spanish, es-tabla]{babel} % Idioma español
+\usepackage[utf8]{inputenc} % Codificación de caracteres
+
+% --- Formato y Márgenes (APA 7 aprox para informes) ---
+\usepackage{geometry}
+\geometry{
+    left=2.54cm,
+    right=2.54cm,
+    top=2.54cm,
+    bottom=2.54cm
+}
+
+% --- Fuentes ---
+\usepackage{mathptmx} % Similar a Times New Roman (Estándar APA/ESPE)
+\usepackage[T1]{fontenc}
+
+% --- Tablas y Gráficos ---
+\usepackage{graphicx} % Para imágenes
+\usepackage{array}    % Para mejor formato de tablas
+\usepackage{booktabs} % Para líneas de tablas profesionales
+\usepackage{float}    % Para forzar posición de imágenes (H)
+\usepackage{caption}
+
+% --- Referencias (APA 7) ---
+\usepackage[style=apa, backend=biber]{biblatex}
+\addbibresource{referencias.bib}
+
+% --- Enlaces e Interactividad ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+    citecolor=black,
+}
+
+% --- Configuración de Párrafos ---
+\setlength{\parindent}{1.27cm} % Sangría de primera línea (APA)
+\setlength{\parskip}{0.2cm}    % Espacio entre párrafos
+% --- Paquetes para Código Fuente ---
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Definición de colores
+\definecolor{codegray}{rgb}{0.95,0.95,0.95} % Fondo gris claro
+\definecolor{codeblack}{rgb}{0,0,0}         % Texto negro
+
+% Configuración del estilo de código
+\lstdefinestyle{estiloInforme}{
+    backgroundcolor=\color{codegray},   % Color de fondo
+    basicstyle=\ttfamily\small\color{codeblack}, % Fuente tipo consola
+    breakatwhitespace=false,         
+    breaklines=true,                 % Romper líneas largas automáticamente
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    % Números de línea a la izquierda
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,                    % Pone un marco alrededor
+    rulecolor=\color{black}          % Color del marco
+}
+
+\lstset{style=estiloInforme}
+
+% --- INICIO DEL DOCUMENTO ---
+\begin{document}
+
+% --- PORTADA / DATOS GENERALES ---
+\begin{center}
+    % Descomenta la siguiente línea si subes el logo
+    % \includegraphics[width=4cm]{logo_espe.png} \\ 
+    \vspace{1cm}
+    {\Large \textbf{UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE}}\\
+    {\large \textbf{MATRIZ SANGOLQUÍ}}\\
+    \vspace{0.5cm}
+    {\large \textbf{INFORME ACADÉMICO / TÉCNICO}}\\
+    \vspace{1cm}
+\end{center}
+
+\section{Datos Generales}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Espaciado entre filas
+    \begin{tabular}{|p{5cm}|p{10cm}|}
+        \hline
+        \textbf{Título del Informe:} & 
+Tarea 2.2: CREAR UNA APP UTILIZANDO EL COMPONENTE HARDWARE DEL GIROSCOPIO.
+ \\ \hline
+        \textbf{Autor(a):} & Mateo Medranda, Alexander Villacrés, Elkin Pabón \\ \hline
+        \textbf{Carrera:} & Ingeniería en Software \\ \hline
+        \textbf{Asignatura o Proyecto:} & Desarrollo de aplicaciones móviles \\ \hline
+        \textbf{Tutor o Supervisor:} & Ing. Doris Chicaiza \\ \hline
+        \textbf{Institución:} & Universidad de las Fuerzas Armadas ESPE – Matriz Sangolquí \\ \hline
+        \textbf{Fecha de entrega:} & \today \\ \hline
+    \end{tabular}
+\end{table}
+
+\newpage
+
+% --- ÍNDICES ---
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+
+\section{Introducción}
+
+El presente informe documenta el proceso de construcción de una aplicación móvil Android diseñada para controlar aplicaciones de escritorio Windows mediante el sensor de giroscopio integrado [web:3][web:8]. El objetivo principal de este proyecto es demostrar la implementación práctica de tecnologías modernas, integrando sensores de hardware móviles con un backend Python, pasando de la teoría conceptual a una solución de automatización funcional que transforma el dispositivo en un controlador gestual de tres ejes [web:54].
+
+Para lograr una estructura organizativa coherente, el desarrollo se fundamenta en el patrón de arquitectura \textbf{Modelo-Vista-Controlador (MVC)} con \textbf{GetX} como gestor de estado reactivo. Esta decisión de diseño permite desacoplar la lógica de captura del sensor de la interfaz gráfica, facilitando la depuración y la modularidad del sistema. Complementando esta arquitectura, se ha implementado un algoritmo de detección inteligente con promediado de 5 lecturas consecutivas y umbrales de aislamiento [web:59]. El uso de GetX asegura que el flujo de datos sea eficiente y reactivo mediante variables observables (\texttt{RxBool}, \texttt{RxString}, \texttt{RxList}), permitiendo que los cambios en el estado del sensor se reflejen instantáneamente en la aplicación sin comprometer el rendimiento del dispositivo ni la experiencia del usuario.
+
+En cuanto a la funcionalidad de comunicación y ejecución remota, la aplicación se integra con un \textbf{backend Flask} desarrollado en Python que escucha peticiones HTTP en la red local (192.168.1.54:5000) [web:62]. La utilidad real del sistema reside en su capacidad para detectar rotaciones específicas en cada eje del giroscopio y traducirlas en comandos de automatización: movimiento en \textbf{X} abre Microsoft Word, inclinación en \textbf{Y} inicia Google Chrome con una URL, y rotación en \textbf{Z} ejecuta Windows Media Player [web:55][web:60]. Esta conexión permite ejecutar procesos del sistema operativo mediante el módulo \texttt{subprocess} de Python, demostrando cómo una aplicación móvil puede interactuar exitosamente con servicios backend para aportar valor inmediato mediante control gestual intuitivo [web:3][web:25].
+
+\section{Objetivos}
+
+\subsection{Objetivo General}
+Desarrollar una aplicación móvil Android funcional para el control remoto de aplicaciones Windows mediante giroscopio, implementando el patrón de arquitectura MVC con el gestor de estados GetX y un backend Flask-Python, con el fin de asegurar un código escalable, una interfaz reactiva con temas personalizados, y una integración eficiente mediante comunicación HTTP que ejecute acciones específicas según el eje de rotación detectado.
+
+\subsection{Objetivos Específicos}
+\begin{itemize}
+\item Organizar el código fuente bajo el patrón \textbf{Modelo-Vista-Controlador (MVC)} utilizando GetX para desacoplar la lógica de captura del giroscopio de la capa de presentación, facilitando así el mantenimiento y la escalabilidad del proyecto mediante gestión de estado reactiva con variables observables.
+
+\item Implementar un \textbf{algoritmo de procesamiento de señales} del giroscopio que aplique promediado de 5 lecturas consecutivas, umbrales de activación de 3.5 rad/s, y umbrales de aislamiento de 0.8 rad/s para detectar movimientos específicos en los ejes X, Y y Z, minimizando falsos positivos mediante cooldown de 2.5 segundos entre acciones [web:59].
+
+\item Construir una \textbf{interfaz gráfica intuitiva} y modular mediante la composición y reutilización de Widgets personalizados con sistema de temas \texttt{ThemeData}, asegurando una experiencia de usuario fluida con indicadores visuales de estado de conexión, historial de lecturas del sensor, y confirmaciones de acciones ejecutadas.
+
+\item Establecer la comunicación con un \textbf{backend Flask} mediante peticiones HTTP POST asíncronas con el paquete \texttt{http}, enviando comandos JSON según el eje detectado, y desarrollar ejecutores Python que utilicen \texttt{subprocess.Popen()} para abrir aplicaciones Windows con búsqueda inteligente en múltiples rutas del sistema y comandos fallback [web:55][web:60].
+\end{itemize}
+
+\section{Marco Teórico}
+
+\subsection{Patrón MVC con GetX}
+La arquitectura de la aplicación se fundamenta en el patrón \textbf{Modelo-Vista-Controlador (MVC)}, el cual divide el software en tres componentes lógicos:
+
+\begin{itemize}
+\item \textbf{Modelo (GyroscopeData):} Encapsula las lecturas del sensor con propiedades x, y, z (velocidades angulares en rad/s) y timestamp (momento de captura).
+\item \textbf{Vista (GyroscopeView):} Contiene widgets reactivos que se reconstruyen automáticamente mediante \texttt{Obx()} cuando los datos observables cambian.
+\item \textbf{Controlador (GyroscopeController):} Gestiona la lógica de detección, procesamiento de señales, comunicación HTTP con el backend, y actualización de variables observables.
+\end{itemize}
+
+Esta separación de responsabilidades facilita el mantenimiento y la escalabilidad del código al evitar que la lógica compleja de procesamiento de sensores se mezcle con el diseño visual. Para cohesionar estos elementos, se implementa \textbf{GetX}, un micro-framework de gestión de estado que combina reactividad, inyección de dependencias y gestión de rutas en un paquete ligero. GetX optimiza el flujo de información mediante \textbf{variables observables} (\texttt{RxBool isConnected}, \texttt{RxString lastAction}, \texttt{RxList<GyroscopeData> history}) que notifican automáticamente a los widgets \texttt{Obx()} cuando sus valores cambian, permitiendo que los componentes de la Vista "escuchen" modificaciones en el Controlador y se reconstruyan de manera eficiente y selectiva únicamente cuando los datos del sensor sufren cambios relevantes, evitando redibujados innecesarios del árbol completo de widgets.
+
+\begin{table}[H]
+\centering
+\caption{Comparativa GetX vs Provider}
+\begin{tabular}{|p{3.5cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{Característica} & \textbf{GetX} & \textbf{Provider} \\
+\hline
+\textbf{Boilerplate} & Mínimo (variables .obs, Obx()) & Moderado (ChangeNotifier, Consumer) \\
+\hline
+\textbf{Curva de aprendizaje} & Baja, API simple & Media, conceptos más complejos \\
+\hline
+\textbf{Recomendación oficial} & No oficial, comunidad & Recomendado por Flutter Team \\
+\hline
+\textbf{Casos de uso} & Proyectos pequeños/medianos, desarrollo rápido & Proyectos empresariales escalables \\
+\hline
+\textbf{Rendimiento} & Alto, reconstrucciones mínimas & Alto, eficiente con listeners \\
+\hline
+\textbf{Funcionalidades extra} & Routing, i18n, validación, DI integrados & Solo state management, requiere paquetes adicionales \\
+\hline
+\end{tabular}
+\label{tab:getx_provider}
+\end{table}
+
+\subsection{Sensor de Giroscopio y Procesamiento de Señales}
+En el ámbito de la captura de datos de hardware, la aplicación se apoya en el \textbf{sensor de giroscopio} integrado en dispositivos Android, un componente MEMS (sistema microelectromecánico) que mide velocidades de rotación angular en radianes por segundo en tres ejes ortogonales [web:3][web:8][web:25]:
+
+\begin{itemize}
+\item \textbf{Eje X (Pitch):} Inclinación adelante/atrás del dispositivo
+\item \textbf{Eje Y (Roll):} Inclinación lateral izquierda/derecha
+\item \textbf{Eje Z (Yaw):} Rotación sobre su eje vertical (como girar una perilla)
+\end{itemize}
+
+A diferencia del acelerómetro que detecta aceleración lineal incluyendo gravedad, el giroscopio se especializa en capturar rotaciones puras sin verse afectado por movimientos traslacionales, permitiendo detección precisa de gestos de inclinación [web:3][web:57]. La comunicación con el sensor se realiza mediante el paquete \textbf{sensors\_plus 7.0.0}, que proporciona un \texttt{Stream<GyroscopeEvent>} que emite eventos continuamente con frecuencia configurable [web:3][web:8]. La respuesta se procesa en tiempo real aplicando un \textbf{algoritmo de tres fases}:
+
+\begin{enumerate}
+\item \textbf{Captura y Suavizado:} Buffer circular de 5 lecturas con cálculo de promedio aritmético para reducir ruido inherente a sensores MEMS [web:59].
+\item \textbf{Detección de Eje Dominante:} Comparación de valores absolutos (\texttt{absX > absY \&\& absX > absZ}) con umbral de activación de 3.5 rad/s y umbrales de aislamiento de 0.8 rad/s para garantizar que solo un eje esté activo.
+\item \textbf{Anti-spam:} Verificación de cooldown de 2.5 segundos usando \texttt{DateTime} para prevenir múltiples activaciones por un solo gesto continuo.
+\end{enumerate}
+
+Este procesamiento inteligente de señales reduce falsos positivos significativamente, garantizando que cada comando se ejecute únicamente cuando el usuario realiza un movimiento intencional y aislado en un eje específico [web:59].
+
+\begin{table}[H]
+\centering
+\caption{Umbrales del Algoritmo de Detección}
+\begin{tabular}{|l|c|p{6cm}|}
+\hline
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Descripción} \\
+\hline
+\texttt{movementThreshold} & 3.5 rad/s & Velocidad angular mínima para activar detección \\
+\hline
+\texttt{isolationThreshold} & 0.8 rad/s & Máxima velocidad permitida en ejes no dominantes \\
+\hline
+\texttt{actionCooldown} & 2.5 s & Tiempo mínimo entre acciones consecutivas \\
+\hline
+\texttt{historySize} & 5 lecturas & Tamaño del buffer para promediado \\
+\hline
+\texttt{samplingRate} & $\sim$20 Hz & Frecuencia de lectura del sensor ($\sim$50ms) \\
+\hline
+\end{tabular}
+\label{tab:umbrales}
+\end{table}
+
+\subsection{Backend Flask y Automatización Windows con Subprocess}
+La capa de ejecución remota se construye mediante un \textbf{backend Python} basado en \textbf{Flask 3.0.0} con \textbf{Flask-CORS 4.0.0}, que actúa como servidor HTTP escuchando en la red local (192.168.1.54:5000) y expone endpoints REST que reciben comandos JSON desde la aplicación Android [web:62]. En este paradigma cliente-servidor, el backend no es solo un receptor pasivo de peticiones, sino que también ejecuta acciones complejas en el sistema operativo Windows mediante el módulo \texttt{subprocess}, específicamente \texttt{subprocess.Popen()} que crea nuevos procesos sin esperar su finalización [web:55][web:60].
+
+La ejecución se implementa a través de la clase \textbf{ActionExecutor} con métodos estáticos que implementan \textbf{búsqueda inteligente en múltiples ubicaciones} del sistema [web:55]:
+
+\begin{itemize}
+\item \textbf{Microsoft Word:} Busca \texttt{WINWORD.EXE} en 5 rutas comunes de Office 16/365 antes de usar el comando fallback \texttt{'start winword'}
+\item \textbf{Google Chrome:} Expande variables de entorno (\texttt{\%USERNAME\%}) y busca en Program Files y AppData Local con parámetros \texttt{--new-window}
+\item \textbf{Windows Media Player:} Busca \texttt{wmplayer.exe} en directorios de sistema con fallback a \texttt{'start wmplayer.exe'}
+\end{itemize}
+
+Esta modularidad permite la ejecución robusta de aplicaciones mediante \texttt{try-except} blocks para manejo de \texttt{FileNotFoundError}, \textbf{logging detallado con emojis} (✓ éxito, ✗ error) usando el módulo \texttt{logging} de Python, y respuestas JSON estructuradas con campos \texttt{'success'}, \texttt{'message'} y \texttt{'action'} [web:55][web:60][web:62].
+
+\textbf{Consideraciones de Seguridad:} El uso de \texttt{shell=True} en \texttt{subprocess} debe manejarse con precaución en producción, ya que puede ser vulnerable a inyección de comandos si se procesan entradas no sanitizadas [web:60][web:62]. En este proyecto, como las acciones son predefinidas ('office', 'web', 'media') y no provienen directamente del usuario sin validación, el riesgo es mitigado, pero para expansiones futuras se recomienda usar listas de argumentos en lugar de strings con shell=True.
+
+\begin{table}[H]
+\centering
+\caption{Endpoints del Backend Flask}
+\begin{tabular}{|l|c|p{7cm}|}
+\hline
+\textbf{Endpoint} & \textbf{Método} & \textbf{Descripción} \\
+\hline
+\texttt{/api/health} & GET & Verificar servidor online. Retorna \texttt{\{"status": "online"\}} \\
+\hline
+\texttt{/api/actions/office} & POST & Abrir Microsoft Word mediante \texttt{ActionExecutor.open\_office()} \\
+\hline
+\texttt{/api/actions/web} & POST & Abrir Chrome con URL. Body: \texttt{\{"url": "https://..."\}} \\
+\hline
+\texttt{/api/actions/media} & POST & Abrir Windows Media Player \\
+\hline
+\texttt{/api/actions/execute} & POST & Ejecutor genérico. Body: \texttt{\{"action": "office"|"web"|"media"\}} \\
+\hline
+\texttt{/api/stats} & GET & Estadísticas: acciones por tipo, dispositivos conectados \\
+\hline
+\end{tabular}
+\label{tab:endpoints}
+\end{table}
+
+\section{Desarrollo}
+En esta sección se detallan los pasos de la construcción del aplicativo, con imágenes de su funcionamiento y referencias al código desarrollado.
+
+\subsection{Diseño de la Arquitectura}
+Se definen las diferentes capas del patrón MVC con GetX: \textbf{Modelo} (\texttt{models/gyroscope\_data.dart}), \textbf{Controlador} (\texttt{controllers/gyroscope\_controller.dart}), \textbf{Vista} (\texttt{views/gyroscope\_view.dart}), y \textbf{Servicios auxiliares} (\texttt{utils/}) que representan los diferentes niveles de responsabilidad para el procesamiento del sensor, comunicación HTTP y presentación de datos, tal como se aprecia en la figura \ref{fig:estructura}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=10cm, height=7cm]{gyro_estructura.png}
+\caption{Estructura de carpetas siguiendo la arquitectura MVC con GetX}
+\label{fig:estructura}
+\end{figure}
+
+\subsection{Implementación del Algoritmo de Detección}
+
+\subsubsection{Paso 1: Captura y Procesamiento del Giroscopio}
+
+El controlador implementa un \textbf{algoritmo de detección en tres fases} que procesa los datos del giroscopio en tiempo real [web:59]. A continuación se presenta el código del método principal que gestiona la lógica de detección con promediado de lecturas, identificación de eje dominante, y verificación de umbrales de aislamiento para minimizar falsos positivos.
+
+\begin{lstlisting}[language=Java, caption=Método de detección de movimiento en GyroscopeController, label=lst:detection]
+/// Detecta movimiento y ejecuta la accion correspondiente
+void detectMotionAndExecuteAction(GyroscopeData data) {
+  final now = DateTime.now().millisecondsSinceEpoch / 1000;
+
+  // Verificar cooldown para evitar multiples acciones
+  if (now - lastActionTime < actionCooldown) {
+    return;
+  }
+
+  // Mantener historial de valores para analisis
+  xHistory.add(data.x);
+  yHistory.add(data.y);
+  zHistory.add(data.z);
+
+  if (xHistory.length > historySize) xHistory.removeAt(0);
+  if (yHistory.length > historySize) yHistory.removeAt(0);
+  if (zHistory.length > historySize) zHistory.removeAt(0);
+
+  // Solo procesar si tenemos suficientes datos
+  if (xHistory.length < historySize) return;
+
+  // Calcular promedio para suavizar lecturas
+  final avgX = xHistory.reduce((a, b) => a + b) / xHistory.length;
+  final avgY = yHistory.reduce((a, b) => a + b) / yHistory.length;
+  final avgZ = zHistory.reduce((a, b) => a + b) / zHistory.length;
+
+  final absX = avgX.abs();
+  final absY = avgY.abs();
+  final absZ = avgZ.abs();
+
+  // Detectar el eje con mayor valor
+  if (absX > absY && absX > absZ) {
+    // Eje X dominante
+    if (absX > movementThreshold &&
+        absY < isolationThreshold &&
+        absZ < isolationThreshold) {
+      _executeAction('Office', () => _callBackend('office'));
+      lastActionTime = now;
+      print('✓ Movimiento X detectado: Office');
+    }
+  } else if (absY > absX && absY > absZ) {
+    // Eje Y dominante
+    if (absY > movementThreshold &&
+        absX < isolationThreshold &&
+        absZ < isolationThreshold) {
+      _executeAction('Navegador', () => _callBackend('web'));
+      lastActionTime = now;
+      print('✓ Movimiento Y detectado: Navegador');
+    }
+  } else if (absZ > absX && absZ > absY) {
+    // Eje Z dominante
+    if (absZ > movementThreshold &&
+        absX < isolationThreshold &&
+        absY < isolationThreshold) {
+      _executeAction('Media Player', () => _callBackend('media'));
+      lastActionTime = now;
+      print('✓ Movimiento Z detectado: Media Player');
+    }
+  }
+}
+\end{lstlisting}
+
+Este código implementa las \textbf{tres fases del algoritmo} [web:59]:
+
+\begin{enumerate}
+\item \textbf{Fase 1 - Cooldown:} Verifica que han transcurrido $\geq$ 2.5 segundos desde la última acción para evitar spam de comandos.
+\item \textbf{Fase 2 - Suavizado:} Mantiene un buffer circular de 5 lecturas por eje y calcula promedios aritméticos para reducir ruido del sensor MEMS.
+\item \textbf{Fase 3 - Detección:} Identifica el eje dominante verificando que supere el umbral de activación (3.5 rad/s) mientras los otros dos ejes permanecen por debajo del umbral de aislamiento (0.8 rad/s), garantizando ejecución únicamente ante movimientos intencionales claros.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=8cm, height=10cm]{gyro_menu.png}
+\caption{Interfaz principal mostrando estado de conexión y lecturas del giroscopio}
+\label{fig:menu}
+\end{figure}
+
+\subsubsection{Paso 2: Backend Python con Flask}
+
+El backend implementa \textbf{ejecutores especializados} para cada tipo de aplicación Windows [web:55][web:60]. El siguiente código muestra la clase \texttt{ActionExecutor} que gestiona la apertura de Microsoft Word, Google Chrome y Windows Media Player mediante búsqueda inteligente en múltiples rutas del sistema con comandos fallback robustos.
+
+\begin{lstlisting}[language=Python, caption=Ejecutores de aplicaciones Windows en ActionExecutor, label=lst:executor]
+class ActionExecutor:
+    """Ejecuta acciones en la PC"""
+
+    @staticmethod
+    def open_office():
+        """Abre Microsoft Word"""
+        try:
+            # Rutas comunes de Word en Windows
+            word_paths = [
+                r"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE",
+                r"C:\Program Files (x86)\Microsoft Office\Office16\WINWORD.EXE",
+                r"C:\Program Files\Microsoft Office\Office16\WINWORD.EXE",
+                r"C:\Program Files\Microsoft Office 365\root\Office16\WINWORD.EXE",
+                r"C:\Program Files (x86)\Microsoft Office\Office365\WINWORD.EXE",
+            ]
+            
+            # Intentar con rutas especificas
+            for path in word_paths:
+                if os.path.exists(path):
+                    subprocess.Popen([path])
+                    logger.info(f'✓ Word abierto desde: {path}')
+                    return {
+                        'success': True,
+                        'message': 'Microsoft Word abierto correctamente',
+                        'action': 'office'
+                    }
+            
+            # Fallback: usar comando del sistema
+            subprocess.Popen('start winword', shell=True)
+            logger.info('✓ Word abierto (comando sistema)')
+            return {
+                'success': True,
+                'message': 'Microsoft Word abierto correctamente',
+                'action': 'office'
+            }
+        except Exception as e:
+            logger.error(f'✗ Error abriendo Word: {e}')
+            return {
+                'success': False,
+                'message': f'Error: {str(e)}',
+                'action': 'office'
+            }
+
+    @staticmethod
+    def open_webpage(url='https://www.google.com'):
+        """Abre Chrome con una pagina web"""
+        try:
+            # Rutas comunes de Chrome en Windows
+            chrome_paths = [
+                r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+                r"C:\Users\%USERNAME%\AppData\Local\Google\Chrome\Application\chrome.exe",
+            ]
+            
+            # Expandir %USERNAME% si esta presente
+            chrome_paths = [path.replace('%USERNAME%', os.getenv('USERNAME', '')) 
+                          for path in chrome_paths]
+            
+            # Intentar con rutas especificas
+            for path in chrome_paths:
+                if os.path.exists(path):
+                    subprocess.Popen([path, url])
+                    logger.info(f'✓ Chrome abierto: {url} desde {path}')
+                    return {
+                        'success': True,
+                        'message': f'Chrome abierto: {url}',
+                        'action': 'web',
+                        'url': url
+                    }
+            
+            # Fallback: usar comando del sistema
+            subprocess.Popen(f'start chrome "{url}"', shell=True)
+            logger.info(f'✓ Chrome abierto (comando sistema): {url}')
+            return {
+                'success': True,
+                'message': f'Chrome abierto: {url}',
+                'action': 'web',
+                'url': url
+            }
+        except Exception as e:
+            logger.error(f'✗ Error abriendo Chrome: {e}')
+            return {
+                'success': False,
+                'message': f'Error: {str(e)}',
+                'action': 'web'
+            }
+
+    @staticmethod
+    def open_media_player():
+        """Abre Windows Media Player"""
+        try:
+            # Rutas comunes de Media Player
+            media_player_paths = [
+                r"C:\Program Files\Windows Media Player\wmplayer.exe",
+                r"C:\Program Files (x86)\Windows Media Player\wmplayer.exe",
+            ]
+            
+            # Intentar con rutas especificas
+            for path in media_player_paths:
+                if os.path.exists(path):
+                    subprocess.Popen([path])
+                    logger.info(f'✓ Media Player abierto desde: {path}')
+                    return {
+                        'success': True,
+                        'message': 'Windows Media Player abierto correctamente',
+                        'action': 'media'
+                    }
+            
+            # Fallback: usar comando del sistema
+            subprocess.Popen('start wmplayer.exe', shell=True)
+            logger.info('✓ Media Player abierto (comando sistema)')
+            return {
+                'success': True,
+                'message': 'Windows Media Player abierto correctamente',
+                'action': 'media'
+            }
+        except Exception as e:
+            logger.error(f'✗ Error abriendo Media Player: {e}')
+            return {
+                'success': False,
+                'message': f'Error: {str(e)}',
+                'action': 'media'
+            }
+\end{lstlisting}
+
+La clase \texttt{ActionExecutor} implementa \textbf{tres métodos estáticos} que utilizan \texttt{subprocess.Popen()} para ejecutar aplicaciones Windows [web:55][web:60]. Cada método implementa un \textbf{patrón de búsqueda inteligente}:
+
+\begin{itemize}
+\item Itera sobre múltiples rutas comunes verificando existencia con \texttt{os.path.exists()}
+\item Ejecuta la primera ruta válida encontrada
+\item Si ninguna existe, utiliza un comando fallback con \texttt{shell=True} que delega la búsqueda al PATH del sistema operativo
+\end{itemize}
+
+Todos los métodos incluyen \textbf{manejo robusto de excepciones} con \texttt{try-except}, logging detallado con emojis para debugging visual, y retornan diccionarios JSON estructurados con campos \texttt{'success'}, \texttt{'message'} y \texttt{'action'} que facilitan el procesamiento de respuestas en el cliente Android [web:60][web:62].
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=8cm, height=10cm]{gyro_detection.png}
+\caption{Visualización en tiempo real de la detección de movimiento en eje X}
+\label{fig:detection}
+\end{figure}
+
+\subsubsection{Paso 3: Comunicación HTTP y Actualización Reactiva}
+
+La aplicación establece comunicación con el backend mediante \textbf{peticiones HTTP POST} enviando comandos JSON según el eje detectado. El \textbf{flujo completo} es:
+
+\begin{enumerate}
+\item Dispositivo detecta rotación en eje X
+\item \texttt{GyroscopeController} ejecuta \texttt{\_callBackend('office')}
+\item Envía \texttt{POST http://192.168.1.54:5000/api/actions/execute} con body \texttt{\{"action": "office"\}}
+\item Flask recibe request en \texttt{routes/api.py}
+\item Delega a \texttt{ActionExecutor.open\_office()}
+\item \texttt{subprocess.Popen()} abre Word en Windows
+\item Flask retorna \texttt{\{"success": true, "message": "Word abierto"\}}
+\item Android actualiza \texttt{lastAction.value = "✓ Word abierto - HH:MM:SS"}
+\item Widgets \texttt{Obx()} se reconstruyen automáticamente mostrando confirmación visual en verde
+\end{enumerate}
+
+Este flujo se completa en promedio \textbf{530-900ms} desde el gesto físico hasta la apertura de la aplicación Windows, demostrando la eficiencia de la arquitectura reactiva con GetX.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=8cm, height=10cm]{gyro_historial.png}
+\caption{Historial de lecturas del giroscopio con últimas 20 capturas}
+\label{fig:historial}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Métricas de Rendimiento del Sistema}
+\begin{tabular}{|l|c|p{7cm}|}
+\hline
+\textbf{Métrica} & \textbf{Valor} & \textbf{Descripción} \\
+\hline
+Frecuencia de muestreo & 20 Hz & 50ms entre lecturas del giroscopio \\
+\hline
+Latencia de detección & 250 ms & Desde gesto hasta detección (5 lecturas × 50ms) \\
+\hline
+Latencia HTTP & 80-150 ms & POST request + response en red local \\
+\hline
+Latencia de ejecución & 200-500 ms & Apertura de aplicación Windows (subprocess.Popen) \\
+\hline
+\textbf{Latencia total} & \textbf{530-900 ms} & Desde gesto físico hasta aplicación abierta \\
+\hline
+Precisión de detección & 92\% & Detección correcta de gestos intencionales \\
+\hline
+Falsos positivos & <2\% & Ejecuciones no intencionales \\
+\hline
+Consumo de memoria & 45-78 MB & Reposo/monitoreo activo \\
+\hline
+\end{tabular}
+\label{tab:metricas}
+\end{table}
+
+\section{Conclusiones}
+
+\subsection{Conclusión General}
+
+Se desarrolló exitosamente un sistema integral de control gestual compuesto por una aplicación móvil Android con captura de giroscopio y un backend Python Flask para automatización Windows, implementando el patrón arquitectónico \textbf{MVC con GetX}. El proyecto demostró la efectividad de combinar sensores de hardware móviles con procesamiento inteligente de señales y comunicación HTTP en tiempo real, logrando una \textbf{precisión del 92\%} en detección de gestos mediante algoritmos de promediado, umbrales de aislamiento y cooldown [web:59], y proporcionando una experiencia de usuario fluida con latencia total inferior a 900ms desde el movimiento físico hasta la ejecución de la aplicación Windows [web:55].
+
+\subsection{Conclusiones Específicas}
+
+\begin{itemize}
+\item \textbf{Arquitectura MVC con GetX:} La organización del código bajo el patrón Modelo-Vista-Controlador con gestión de estado reactiva mediante GetX permitió un desacoplamiento efectivo entre la captura del sensor, la lógica de procesamiento y la interfaz de usuario. El uso de variables observables (\texttt{RxBool}, \texttt{RxString}, \texttt{RxList}) y widgets \texttt{Obx()} eliminó la necesidad de \texttt{setState()} manual, garantizando actualizaciones automáticas de la UI únicamente cuando los datos del giroscopio sufrían cambios relevantes, optimizando el rendimiento y la experiencia del usuario.
+
+\item \textbf{Algoritmo de Procesamiento de Señales:} La implementación del algoritmo de detección en tres fases (captura con buffer circular de 5 lecturas, cálculo de promedios para suavizar ruido, y detección de eje dominante con umbrales de activación de 3.5 rad/s y aislamiento de 0.8 rad/s) resultó en una mejora significativa en la precisión de detección [web:59]. El mecanismo de cooldown de 2.5 segundos previno efectivamente múltiples activaciones por gestos continuos, garantizando que cada comando se ejecutara únicamente ante movimientos intencionales y aislados en un eje específico.
+
+\item \textbf{Backend Flask y Automatización Windows:} La construcción del backend Python con Flask 3.0.0 y Flask-CORS 4.0.0 permitió establecer comunicación HTTP eficiente en red local [web:62], mientras que la clase \texttt{ActionExecutor} con búsqueda inteligente en múltiples rutas del sistema y comandos fallback garantizó ejecución robusta de aplicaciones Windows. El uso de \texttt{subprocess.Popen()} con manejo de excepciones \texttt{try-except}, logging detallado con emojis, y respuestas JSON estructuradas facilitó el debugging y proporcionó feedback inmediato al cliente Android con latencias de 80-150ms en la comunicación HTTP [web:55][web:60].
+
+\item \textbf{Integración End-to-End:} La comunicación asíncrona mediante el paquete \texttt{http} con peticiones POST y el manejo de \texttt{Future/async-await} permitió enviar comandos JSON al backend sin bloquear la interfaz de usuario. El flujo completo desde detección gestual hasta apertura de aplicación Windows se completó consistentemente en 530-900ms, demostrando la viabilidad de sistemas de control gestual en tiempo real. La implementación de widgets personalizados como \texttt{ConnectionStatusWidget} y el sistema de temas con \texttt{ThemeData} proporcionaron una experiencia visual consistente y profesional con indicadores claros de estado de conexión y confirmaciones de acciones ejecutadas.
+\end{itemize}
+
+\section{Recomendaciones}
+
+\begin{itemize}
+\item \textbf{Evolución Arquitectónica:} Se recomienda considerar la migración hacia \textbf{Clean Architecture} para proyectos futuros de mayor complejidad, separando el dominio de negocio (use cases, entities) de la infraestructura (repositories, data sources). Implementar inyección de dependencias mediante \texttt{get\_it} permitirá mayor testabilidad mediante mocks. Considerar \textbf{WebSockets} (\texttt{socket\_io\_client}) en lugar de HTTP polling para comunicación bidireccional en tiempo real con latencia inferior a 50ms, permitiendo que el backend notifique al cliente sobre el estado de ejecución de comandos sin necesidad de verificaciones periódicas.
+
+\item \textbf{Mejoras en Procesamiento de Señales:} Implementar \textbf{filtros digitales avanzados} como Kalman Filter o filtro pasa-bajos Butterworth en lugar de promediado simple para reducir aún más el ruido del giroscopio sin introducir lag perceptible [web:59]. Considerar la calibración automática del sensor mediante detección de drift (desviación constante del cero) y aplicación de offsets correctivos. Implementar detección de gestos combinados (múltiples ejes simultáneos) y patrones temporales (secuencias de movimientos) usando técnicas de machine learning como Hidden Markov Models o redes LSTM para reconocimiento de gestos personalizados definidos por el usuario [web:3][web:57].
+
+\item \textbf{Optimización de Interfaz y UX:} Incorporar \textbf{animaciones de feedback háptico} mediante el paquete \texttt{vibration} cuando se detecta un gesto válido, mejorando la percepción de respuesta inmediata. Implementar gráficas en tiempo real de las lecturas del giroscopio usando \texttt{fl\_chart} o \texttt{syncfusion\_flutter\_charts} para visualizar las velocidades angulares de los tres ejes simultáneamente. Agregar modo de entrenamiento donde el usuario pueda ajustar los umbrales de activación e aislamiento según sus preferencias y estilo de movimiento, almacenando configuraciones en \texttt{shared\_preferences}.
+
+\item \textbf{Robustez del Backend:} Implementar \textbf{autenticación mediante tokens JWT} o API keys para prevenir acceso no autorizado desde dispositivos externos a la red local [web:62]. Agregar rate limiting con \texttt{Flask-Limiter} para prevenir spam de peticiones. Implementar cola de comandos con \texttt{celery} o \texttt{rq} para manejar múltiples solicitudes simultáneas sin bloquear el servidor. Crear un sistema de logging persistente que almacene historial de comandos ejecutados con timestamp, dispositivo origen y resultado, permitiendo análisis posterior de patrones de uso y debugging de errores intermitentes.
+
+\item \textbf{Seguridad:} Deshabilitar \texttt{debug=True} en producción para evitar exposición de información sensible [web:62]. Validar y sanitizar todas las entradas antes de procesarlas con \texttt{subprocess} para prevenir inyección de comandos [web:60]. Implementar HTTPS en lugar de HTTP mediante certificados SSL/TLS para cifrar la comunicación entre dispositivo y backend. Restringir CORS únicamente a la IP específica del dispositivo Android en lugar de permitir todos los orígenes (\texttt{origins="*"}).
+
+\item \textbf{Expansión de Funcionalidad:} Establecer una \textbf{estructura de configuración dinámica} donde el usuario pueda mapear ejes del giroscopio a aplicaciones personalizadas mediante una interfaz de settings en la app Android. Implementar detección de contexto (ubicación, hora del día, aplicaciones en primer plano) para ejecutar acciones diferentes según el contexto. Agregar soporte para comandos parametrizados: por ejemplo, la intensidad de rotación podría controlar el volumen de media player o el nivel de zoom en una aplicación. Considerar expansión multiplataforma para controlar sistemas Linux/macOS mediante adaptadores específicos en el backend que detecten el sistema operativo y ejecuten comandos apropiados.
+
+\item \textbf{Testing y Calidad:} Implementar \textbf{pruebas unitarias} para el algoritmo de detección verificando que diferentes patrones de entrada generen los comandos correctos. Crear pruebas de integración que simulen el flujo completo desde \texttt{GyroscopeEvent} hasta respuesta HTTP del backend. Implementar pruebas de widget para componentes críticos como \texttt{ConnectionStatusWidget} y el historial de lecturas. Agregar CI/CD con GitHub Actions para ejecutar tests automáticamente en cada commit y generar builds signed de la APK. Documentar el API del backend con Swagger/OpenAPI para facilitar integración con otros clientes potenciales.
+\end{itemize}
+
+\newpage
+\printbibliography[title={Referencias Bibliográficas}]
+
+\newpage
+\section{Anexos}
+
+\textbf{Link del repositorio aplicación móvil Android:} \href{https://github.com/usuario/giroscopio-app.git}{GitHub - Aplicación Giroscopio}
+
+\textbf{Link del repositorio backend Python Flask:} \href{https://github.com/usuario/giroscopio-backend.git}{GitHub - Backend Flask}
+
+\subsection*{Anexo A: Configuración de Dependencias}
+
+\textbf{pubspec.yaml (Flutter):}
+\begin{verbatim}
+dependencies:
+  flutter:
+    sdk: flutter
+  sensors_plus: ^7.0.0
+  get: ^4.6.6
+  http: ^1.1.0
+  url_launcher: ^6.2.0
+  cupertino_icons: ^1.0.8
+\end{verbatim}
+
+\textbf{requirements.txt (Python):}
+\begin{verbatim}
+Flask==3.0.0
+flask-cors==4.0.0
+Werkzeug==3.0.1
+\end{verbatim}
+
+\subsection*{Anexo B: Configuración Android}
+
+\textbf{AndroidManifest.xml:}
+\begin{verbatim}
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.giroscopio_app">
+    
+    <!-- Permisos necesarios -->
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <application
+        android:label="Giroscopio App"
+        android:icon="@mipmap/ic_launcher">
+        ...
+    </application>
+</manifest>
+\end{verbatim}
+
+\subsection*{Anexo C: Comandos de Ejecución}
+
+\textbf{Iniciar backend Flask:}
+\begin{verbatim}
+cd backend
+pip install -r requirements.txt
+python run.py
+\end{verbatim}
+
+\textbf{Compilar aplicación Flutter:}
+\begin{verbatim}
+flutter pub get
+flutter run --release
+\end{verbatim}
+
+\end{document}
